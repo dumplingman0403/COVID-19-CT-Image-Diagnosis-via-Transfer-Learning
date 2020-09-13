@@ -17,6 +17,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, LambdaCallback, ModelC
 import cv2
 
 
+
 def estimate(X_train, y_train, back_bone):
     IMAGE_WIDTH = 224
     IMAGE_HEIGHT = 224
