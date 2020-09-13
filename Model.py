@@ -192,7 +192,16 @@ def predict(X_test, model):
     x = np.array(X)
 
     y_pred = []
-    test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+    if back_bone == 'ResNet50V2':
+        test_datagen = ImageDataGenerator(preprocessing_function=resnet_preprocess)
+    elif back_bone == 'Xception':
+        test_datagen = ImageDataGenerator(preprocessing_function=xception_preprocess)
+    elif back_bone == 'DenseNet201':
+        test_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
+    elif back_bone == 'MobileNetV2':
+        test_datagen = ImageDataGenerator(preprocessing_function=mobile_preprocess)
+    else:
+        raise ValueError('Please select transfer learning model!')
 
     for batch in test_datagen.flow(x, batch_size=1, shuffle=False):
         pred = model.predict(batch)
@@ -237,7 +246,7 @@ def load_train():
 
 if __name__ == "__main__":
     X_train, y_train = load_train()
-    transfer = input("select transfer learning model:")
+    transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 \n")
     model = estimate(X_train, y_train, transfer)
 
     #model = load_model("Model.h5")
