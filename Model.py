@@ -247,7 +247,7 @@ def load_train():
 
 if __name__ == "__main__":
     X_train, y_train = load_train()
-    transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 \n")
+    transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 : \n")
     model = estimate(X_train, y_train, transfer)
 
     #model = load_model("Model.h5")
