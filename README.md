@@ -25,10 +25,19 @@ def estimate(X_train, y_train, back_bone):
         x, y_train, test_size=0.20, random_state=2)
 ```
 #### Run model
+Step 1. Execute Model.py
 
 ```bash
 python3 Model.py
 ```
+Step 2. Select transfer learning model by input model's name. In the following, we choose ResNet50V2 as the transfer learning model. 
+
+```bash
+select transfer learning model: 
+1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 :
+ResNet50V2
+```
+
 
 ### Contact Us
 [Chun Yu Wu](https://github.com/dumplingman0403) - ericchunyuwu@gmail.com   
