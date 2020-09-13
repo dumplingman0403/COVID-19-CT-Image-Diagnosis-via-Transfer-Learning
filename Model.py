@@ -3,7 +3,10 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, GlobalAveragePooling2D
-from tensorflow.keras.applications.resnet_v2 import preprocess_input
+from tensorflow.keras.applications.resnet_v2 import preprocess_input as resnet_preprocess
+from tensorflow.keras.applications.xception import preprocess_input as xception_preprocess
+from tensorflow.keras.applications.densenet import preprocess_input as denset_preprocess
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobile_preprocess
 from tensorflow.keras import applications
 from tensorflow.keras import optimizers
 import numpy as np
@@ -14,7 +17,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, LambdaCallback, ModelC
 import cv2
 
 
-def estimate(X_train, y_train):
+def estimate(X_train, y_train, back_bone):
     IMAGE_WIDTH = 224
     IMAGE_HEIGHT = 224
     input_shape = (IMAGE_WIDTH, IMAGE_HEIGHT, 3)
@@ -22,7 +25,7 @@ def estimate(X_train, y_train):
     epochs = 40
     ntrain = 0.8 * len(X_train)
     nval = 0.2 * len(X_train)
-
+    back_bone = str(back_bone)
     X = []
     X_train = np.reshape(np.array(X_train), [len(X_train), ])
 
@@ -48,19 +51,57 @@ def estimate(X_train, y_train):
         x, y_train, test_size=0.20, random_state=2)
 
     # data generator
+    if back_bone == 'ResNet50V2':
+        train_datagen = ImageDataGenerator(
+            preprocessing_function=resnet_preprocess,
+            rotation_range=15,
+            shear_range=0.1,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            width_shift_range=0.1,
+            height_shift_range=0.1
+        )
 
-    train_datagen = ImageDataGenerator(
-        preprocessing_function=preprocess_input,
-        rotation_range=15,
-        shear_range=0.1,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        width_shift_range=0.1,
-        height_shift_range=0.1
-    )
+        val_datagen = ImageDataGenerator(preprocessing_function=resnet_preprocess)
 
-    val_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+    elif back_bone == 'Xception':
+        train_datagen = ImageDataGenerator(
+            preprocessing_function=xception_preprocess,
+            rotation_range=15,
+            shear_range=0.1,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            width_shift_range=0.1,
+            height_shift_range=0.1
+        )
 
+        val_datagen = ImageDataGenerator(preprocessing_function=xception_preprocess)
+    elif back_bone == "DenseNet201":
+        train_datagen = ImageDataGenerator(
+            preprocessing_function=denset_preprocess,
+            rotation_range=15,
+            shear_range=0.1,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            width_shift_range=0.1,
+            height_shift_range=0.1
+        )
+
+        val_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
+    elif back_bone == "MobileNetV2":
+        train_datagen = ImageDataGenerator(
+            preprocessing_function= mobile_preprocess,
+            rotation_range=15,
+            shear_range=0.1,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            width_shift_range=0.1,
+            height_shift_range=0.1
+        )
+
+        val_datagen = ImageDataGenerator(preprocessing_function=mobile_preprocess)
+    else:
+        raise ValueError('Please select transfer learning model!')
     train_generator = train_datagen.flow(
         X_train, y_train, batch_size=batch_size, shuffle=True)
     val_generator = val_datagen.flow(
@@ -68,8 +109,20 @@ def estimate(X_train, y_train):
 
     # model
     model = Sequential()
-    base_model = applications.resnet_v2.ResNet50V2(
-        include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    if back_bone == 'ResNet50V2':
+        base_model = applications.resnet_v2.ResNet50V2(
+            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    elif back_bone == 'Xception':
+        base_model = applications.Xception(
+            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    elif back_bone == 'DenseNet201':
+        base_model = applications.DenseNet201(
+            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    elif back_bone == 'MobileNetV2':
+        base_model = applications.MobileNetV2(
+            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    else:
+        raise ValueError('Please select transfer learning model!')
 
     base_model.trainable = False
 
@@ -184,7 +237,8 @@ def load_train():
 
 if __name__ == "__main__":
     X_train, y_train = load_train()
-    model = estimate(X_train, y_train)
+    transfer = input("select transfer learning model:")
+    model = estimate(X_train, y_train, transfer)
 
     #model = load_model("Model.h5")
     X_train, y_train = load_train()
