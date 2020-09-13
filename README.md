@@ -30,5 +30,10 @@ def estimate(X_train, y_train, back_bone):
 python3 Model.py
 ```
 
+### Contact Us
+[Chun Yu Wu](https://github.com/dumplingman0403) - ericchunyuwu@gmail.com   
+[Kao-Feng Hsieh](https://github.com/hsiehkaofeng) - hsiehkaofeng@gmail.com
+
+
 
 
