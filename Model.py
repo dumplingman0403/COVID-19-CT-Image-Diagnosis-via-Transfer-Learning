@@ -217,7 +217,7 @@ def predict(X_test, model):
 
 
 def load_train():
-    dir = "Images-processed"
+    dir = "Images-processed"                # your file directory
     covid_dir = dir+"/CT_COVID/"
     noncovid_dir = dir+"/CT_NonCOVID/"
 
