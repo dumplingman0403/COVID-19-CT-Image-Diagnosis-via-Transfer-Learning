@@ -33,7 +33,7 @@ Step 1. Execute Model.py
 ```bash
 python3 Model.py
 ```
-Step 2. Select transfer learning model by input model's name. In the following, we choose ResNet50V2 as the transfer learning model. 
+Step 2. Select transfer learning model by input model's name. For example, in the following, we choose ResNet50V2 as the transfer learning model. 
 
 ```bash
 select transfer learning model: 
