@@ -15,6 +15,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_im
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import ReduceLROnPlateau, LambdaCallback, ModelCheckpoint, LearningRateScheduler
 import cv2
+from sklearn.metrics import classification_report
 
 
 
@@ -171,12 +172,11 @@ def estimate(X_train, y_train, back_bone):
     return model
 
 
-def predict(X_test, model):
+def predict(X_test, model, back_bone):
     i = 0
     nrows = 224
     ncolumns = 224
-    channels = 1
-
+    back_bone = str(back_bone)
     X = []
     X_test = np.reshape(np.array(X_test), [len(X_test), ])
 
@@ -252,9 +252,11 @@ if __name__ == "__main__":
 
     #model = load_model("Model.h5")
     X_train, y_train = load_train()
-    y_pred = predict(X_train, model)
+    y_pred = predict(X_train, model, transfer)
     num = 0
     for i in range(len(y_train)):
         if y_pred[i] == y_train[i]:
             num += 1
     print(num/len(y_train))
+
+    print(classification_report(y_train, y_pred, target_names=['COVID', 'NonCOVID']))
