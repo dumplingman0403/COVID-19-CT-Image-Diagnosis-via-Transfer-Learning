@@ -1,6 +1,9 @@
 # COVID-19-CT-Image-Diagnosis-via-Transfer-Learning
 
+
 ## Introduction
+Coronavirus disease 2019 (COVID‑19) is an infectious disease caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2).It was first identified in December 2019 in Wuhan, Hubei, China, and has resulted in an ongoing pandemic. As of 14 September 2020, more than 28.8 million cases have been reported across 188 countries and territories with more than 922,000 deaths. 
+
 
 ## Data 
 This project is originally designed for "INFORMS 2020 QSR Data Challenge - CT Scan Diagnosis for COVID-19". The dataset is provided by competition organizer. To accesss dataset, you can follow the guildline in [challenge website](https://connect.informs.org/communities/community-home/digestviewer/viewthread?MessageKey=d8770470-40c4-4662-b8ca-d052fa17aaf8&CommunityKey=1d5653fa-85c8-46b3-8176-869b140e5e3c&tab=digestviewer) or [here](https://connect.informs.org/HigherLogic/System/DownloadDocumentFile.ashx?DocumentFileKey=953f3ec3-7d2d-9097-de0c-231d9b820505).
@@ -13,7 +16,7 @@ Number of NonCOVID : 292
 
 <p align='center'>
 <img src= 'Images/covid_img.png' alt= 'covid_img' height= 224px width= 224px style="padding:20px"/><img src= 'Images/noncovid_img.jpg' alt= 'non_covid_img' height= 224px width= 224px style="padding:20px"/>
-    <br>CT COVID(left), CT Non-COVID9(right)
+    <br>CT COVID(left), CT Non-COVID(right)
 </p>
 
 
