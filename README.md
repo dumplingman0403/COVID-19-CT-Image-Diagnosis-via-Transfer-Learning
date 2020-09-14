@@ -2,7 +2,12 @@
 
 
 ## Introduction
-Coronavirus disease 2019 (COVID‑19) is an infectious disease caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2).It was first identified in December 2019 in Wuhan, Hubei, China, and has resulted in an ongoing pandemic. As of 14 September 2020, more than 28.8 million cases have been reported across 188 countries and territories with more than 922,000 deaths. 
+This project is designed to use transfer learning to classify COVID-19 by lung CT scan. The pre-train  weight and the following models in [Keras applications](https://keras.io/api/applications/) is being applied :
+
+- ResNet50V2 
+- Xception 
+- DenseNet201 
+- MobileNetV2
 
 
 ## Data 
