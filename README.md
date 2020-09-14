@@ -5,6 +5,24 @@
 ## Data 
 This project is originally designed for "INFORMS 2020 QSR Data Challenge - CT Scan Diagnosis for COVID-19". The dataset is provided by competition organizer. To accesss dataset, you can follow the guildline in [challenge website](https://connect.informs.org/communities/community-home/digestviewer/viewthread?MessageKey=d8770470-40c4-4662-b8ca-d052fa17aaf8&CommunityKey=1d5653fa-85c8-46b3-8176-869b140e5e3c&tab=digestviewer) or [here](https://connect.informs.org/HigherLogic/System/DownloadDocumentFile.ashx?DocumentFileKey=953f3ec3-7d2d-9097-de0c-231d9b820505).
 
+Total data         : 543   
+Number of COVID    : 251   
+Number of NonCOVID : 292   
+
+<style>
+    figure {
+        padding: 20px;
+    }
+
+</style>
+
+<div align='center'>
+    <figure>
+        <img src= 'Images/covid_img.png' alt= 'covid_img' height= 224px width= 224px  /> <figcaption>CT COVID</figcaption>
+        <img src= 'Images/noncovid_img.jpg' alt= 'non_covid_img' height= 224px width= 224px/> <figcaption>CT NonCOVID</figcaption> 
+    </figure>
+</div>
+
 
 
 ## How to run
@@ -21,9 +39,9 @@ def estimate(X_train, y_train, back_bone):
     IMAGE_WIDTH = 224                               # Image width
     IMAGE_HEIGHT = 224                              # Image height
     input_shape = (IMAGE_WIDTH, IMAGE_HEIGHT, 3)    # (width, height, channel) channel = 3 ---> RGB
-    batch_size = 8                                  
+    batch_size = 8                                  # Batch size 
     epochs = 40                                     # Number of epochs
-    ntrain = 0.8 * len(X_train)                     # split data with 80/20 train/validation 
+    ntrain = 0.8 * len(X_train)                     # Split data with 80/20 train/validation 
     nval = 0.2 * len(X_train)
 
     X_train, X_val, y_train, y_val = train_test_split(  # 20% validation set
