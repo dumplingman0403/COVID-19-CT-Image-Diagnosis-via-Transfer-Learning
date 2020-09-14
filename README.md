@@ -12,11 +12,10 @@ Number of NonCOVID : 292
 
 
 <p align='center'>
-    <figure align='center'>
-        <img src= 'Images/covid_img.png' alt= 'covid_img' height= 224px width= 224px style="padding:20px"/><img src= 'Images/noncovid_img.jpg' alt= 'non_covid_img' height= 224px width= 224px style="padding:20px"/>
-        <figcaption>CT image: Left: COVID  Right: Non-COVID</figcaption>
-    </figure>
+<img src= 'Images/covid_img.png' alt= 'covid_img' height= 224px width= 224px style="padding:20px"/><img src= 'Images/noncovid_img.jpg' alt= 'non_covid_img' height= 224px width= 224px style="padding:20px"/>
+    <br>CT COVID(left), CT Non-COVID9(right)
 </p>
+
 
 
 
