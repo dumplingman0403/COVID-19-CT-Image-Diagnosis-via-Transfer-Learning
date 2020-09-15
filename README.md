@@ -70,7 +70,8 @@ select transfer learning model:
 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 :
 ResNet50V2
 ```
-
+#### Demo
+[demo.ipynb](demo.ipynb) : Example of transfer learning model using DenseNet201
 
 ### Contact Us
 [Chun Yu Wu](https://github.com/dumplingman0403) - ericchunyuwu@gmail.com   
