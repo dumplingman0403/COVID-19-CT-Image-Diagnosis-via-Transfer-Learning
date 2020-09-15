@@ -23,8 +23,17 @@ Total data         : 543
     <br>CT COVID(left), CT Non-COVID(right)
 </p>
 
+## Performance
+<center>
 
+Model|Percision|Sensitivity|Specificity|F1 score|Accuracy
+-----|---------|-----------|-----------|--------|--------
+ResNet50V2|0.94|0.94|0.93|0.94|0.94       
+Xception |0.91|0.90|0.925|0.91|0.91         
+***DenseNet201***|***0.96***|***0.96***|***0.93***|***0.96***|***0.96***       
+MobileNetV2|0.94|0.95|0.925|0.94|0.94
 
+</center>
 
 ## How to run
 #### Customize your input
