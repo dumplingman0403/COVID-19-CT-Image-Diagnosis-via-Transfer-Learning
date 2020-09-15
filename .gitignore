@@ -1,6 +1,5 @@
 Images-processed/
 *.h5
-plot_data.py
 CT-MetaInfo.xlsx
 Model_demo.ipynb
 __pycache__/
