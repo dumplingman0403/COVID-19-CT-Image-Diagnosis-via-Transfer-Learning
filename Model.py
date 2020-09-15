@@ -15,7 +15,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_im
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import ReduceLROnPlateau, LambdaCallback, ModelCheckpoint, LearningRateScheduler
 import cv2
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
+import plot_data as plot_cm
 
 
 
@@ -24,7 +25,7 @@ def estimate(X_train, y_train, back_bone):
     IMAGE_HEIGHT = 224                              # Image height
     input_shape = (IMAGE_WIDTH, IMAGE_HEIGHT, 3)    # (width, height, channel) channel = 3 ---> RGB
     batch_size = 8
-    epochs = 40                                     # Number of epochs
+    epochs = 1                                     # Number of epochs
     ntrain = 0.8 * len(X_train)                     # split data with 80/20 train/validation
     nval = 0.2 * len(X_train)
     back_bone = str(back_bone)
@@ -250,7 +251,7 @@ if __name__ == "__main__":
     transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 : \n")
     model = estimate(X_train, y_train, transfer)
 
-    #model = load_model("Model.h5")
+    # model = load_model("Model.h5")
     X_train, y_train = load_train()
     y_pred = predict(X_train, model, transfer)
     num = 0
@@ -260,3 +261,5 @@ if __name__ == "__main__":
     print(num/len(y_train))
 
     print(classification_report(y_train, y_pred, target_names=['COVID', 'NonCOVID']))
+    cm = confusion_matrix(y_train, y_pred)
+    plot_cm.plot_confusion_matrix(cm, ['COVID', 'NonCOVID'])
