@@ -29,6 +29,7 @@ def estimate(X_train, y_train, back_bone):
     ntrain = 0.8 * len(X_train)                     # split data with 80/20 train/validation
     nval = 0.2 * len(X_train)
     back_bone = str(back_bone)
+    print("Using " + back_bone + "...")
     X = []
     X_train = np.reshape(np.array(X_train), [len(X_train), ])
 
@@ -54,7 +55,7 @@ def estimate(X_train, y_train, back_bone):
         x, y_train, test_size=0.20, random_state=2)
 
     # data generator
-    if back_bone == 'ResNet50V2':
+    if back_bone == 'ResNet50V2' or back_bone =='1':
         train_datagen = ImageDataGenerator(
             preprocessing_function=resnet_preprocess,
             rotation_range=15,
@@ -67,7 +68,7 @@ def estimate(X_train, y_train, back_bone):
 
         val_datagen = ImageDataGenerator(preprocessing_function=resnet_preprocess)
 
-    elif back_bone == 'Xception':
+    elif back_bone == 'Xception' or back_bone =='2':
         train_datagen = ImageDataGenerator(
             preprocessing_function=xception_preprocess,
             rotation_range=15,
@@ -79,7 +80,7 @@ def estimate(X_train, y_train, back_bone):
         )
 
         val_datagen = ImageDataGenerator(preprocessing_function=xception_preprocess)
-    elif back_bone == "DenseNet201":
+    elif back_bone == "DenseNet201" or back_bone =='3':
         train_datagen = ImageDataGenerator(
             preprocessing_function=denset_preprocess,
             rotation_range=15,
@@ -91,7 +92,7 @@ def estimate(X_train, y_train, back_bone):
         )
 
         val_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
-    elif back_bone == "MobileNetV2":
+    elif back_bone == "MobileNetV2" or back_bone == '4':
         train_datagen = ImageDataGenerator(
             preprocessing_function= mobile_preprocess,
             rotation_range=15,
@@ -112,16 +113,16 @@ def estimate(X_train, y_train, back_bone):
 
     # model
     model = Sequential()
-    if back_bone == 'ResNet50V2':
+    if back_bone == 'ResNet50V2' or back_bone == '1':
         base_model = applications.resnet_v2.ResNet50V2(
             include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'Xception':
+    elif back_bone == 'Xception' or back_bone == '2':
         base_model = applications.Xception(
             include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'DenseNet201':
+    elif back_bone == 'DenseNet201' or back_bone =='3':
         base_model = applications.DenseNet201(
             include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'MobileNetV2':
+    elif back_bone == 'MobileNetV2' or back_bone =='4':
         base_model = applications.MobileNetV2(
             include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
     else:
@@ -194,13 +195,13 @@ def predict(X_test, model, back_bone):
     x = np.array(X)
 
     y_pred = []
-    if back_bone == 'ResNet50V2':
+    if back_bone == 'ResNet50V2' or back_bone =='1':
         test_datagen = ImageDataGenerator(preprocessing_function=resnet_preprocess)
-    elif back_bone == 'Xception':
+    elif back_bone == 'Xception'or back_bone =='2':
         test_datagen = ImageDataGenerator(preprocessing_function=xception_preprocess)
-    elif back_bone == 'DenseNet201':
+    elif back_bone == 'DenseNet201'or back_bone =='3':
         test_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
-    elif back_bone == 'MobileNetV2':
+    elif back_bone == 'MobileNetV2'or back_bone =='4':
         test_datagen = ImageDataGenerator(preprocessing_function=mobile_preprocess)
     else:
         raise ValueError('Please select transfer learning model!')
