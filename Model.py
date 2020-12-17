@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, GlobalAveragePooling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, GlobalAveragePooling2D, Concatenate
 from tensorflow.keras.applications.resnet_v2 import preprocess_input as resnet_preprocess
 from tensorflow.keras.applications.xception import preprocess_input as xception_preprocess
 from tensorflow.keras.applications.densenet import preprocess_input as denset_preprocess
@@ -17,6 +17,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, LambdaCallback, ModelC
 import cv2
 from sklearn.metrics import classification_report, confusion_matrix
 import plot_data as plot_cm
+from sklearn.model_selection import KFold
 
 
 
@@ -25,7 +26,7 @@ def estimate(X_train, y_train, back_bone):
     IMAGE_HEIGHT = 224                              # Image height
     input_shape = (IMAGE_WIDTH, IMAGE_HEIGHT, 3)    # (width, height, channel) channel = 3 ---> RGB
     batch_size = 8
-    epochs = 1                                     # Number of epochs
+    epochs = 40                                     # Number of epochs
     ntrain = 0.8 * len(X_train)                     # split data with 80/20 train/validation
     nval = 0.2 * len(X_train)
     back_bone = str(back_bone)
@@ -104,6 +105,18 @@ def estimate(X_train, y_train, back_bone):
         )
 
         val_datagen = ImageDataGenerator(preprocessing_function=mobile_preprocess)
+
+    elif back_bone == 'Combine' or back_bone == '5':   #combine DenseNet & MobileNet
+        train_datagen = ImageDataGenerator(
+            preprocessing_function=denset_preprocess,
+            rotation_range=15,
+            shear_range=0.1,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            width_shift_range=0.1,
+            height_shift_range=0.1
+        )
+        val_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
     else:
         raise ValueError('Please select transfer learning model!')
     train_generator = train_datagen.flow(
@@ -112,40 +125,74 @@ def estimate(X_train, y_train, back_bone):
         X_val, y_val, batch_size=batch_size, shuffle=True)
 
     # model
-    model = Sequential()
-    if back_bone == 'ResNet50V2' or back_bone == '1':
-        base_model = applications.resnet_v2.ResNet50V2(
-            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'Xception' or back_bone == '2':
-        base_model = applications.Xception(
-            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'DenseNet201' or back_bone =='3':
-        base_model = applications.DenseNet201(
-            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
-    elif back_bone == 'MobileNetV2' or back_bone =='4':
-        base_model = applications.MobileNetV2(
-            include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+    if back_bone == 'Combine' or back_bone == '5':
+        base_model_d = applications.DenseNet201(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        base_model_m = applications.MobileNetV2(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        base_model_d.trainable = False
+        base_model_m.trainable = False
+
+        input_data = tf.keras.Input(input_shape)
+        m_l = base_model_m(input_data)
+        m_l = BatchNormalization()(m_l)
+        m_l = Flatten()(m_l)
+        model_m = tf.keras.Model(input_data, m_l)
+
+        d_l = base_model_d(input_data)
+        d_l = BatchNormalization()(d_l)
+        d_l = Flatten()(d_l)
+        model_d = tf.keras.Model(input_data, d_l)
+
+        c_l = Concatenate()([model_m.output, model_d.output])
+        c_l = Flatten()(c_l)
+        c_l = Dense(1000, activation='relu')(c_l)
+        c_l = Dropout(0.1)(c_l)
+        c_l = Dense(256, activation='relu')(c_l)
+        c_l = Dropout(0.1)(c_l)
+        c_l = Dense(128, activation='relu')(c_l)
+        c_l = Dropout(0.1)(c_l)
+        c_l = Dense(64, activation='relu')(c_l)
+        c_l = Dense(1, activation='sigmoid')(c_l)
+        
+        model = tf.keras.Model(input_data, c_l)
+
+        
     else:
-        raise ValueError('Please select transfer learning model!')
+        model = Sequential()
+        if back_bone == 'ResNet50V2' or back_bone == '1':
+            base_model = applications.resnet_v2.ResNet50V2(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        elif back_bone == 'Xception' or back_bone == '2':
+            base_model = applications.Xception(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        elif back_bone == 'DenseNet201' or back_bone =='3':
+            base_model = applications.DenseNet201(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        elif back_bone == 'MobileNetV2' or back_bone =='4':
+            base_model = applications.MobileNetV2(
+                include_top=False, pooling='avg', weights='imagenet', input_shape=input_shape)
+        else:
+            raise ValueError('Please select transfer learning model!')
 
-    base_model.trainable = False
+        base_model.trainable = False
 
-    model.add(base_model)
+        model.add(base_model)
 
-    model.add(BatchNormalization())
-    model.add(Flatten())
+        model.add(BatchNormalization())
+        model.add(Flatten())
 
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.1))
+        model.add(Dense(128, activation='relu'))
+        model.add(Dropout(0.1))
 
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.2))
+        model.add(Dense(64, activation='relu'))
+        model.add(Dropout(0.2))
 
-    model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(1, activation='sigmoid'))
 
     model.compile(loss='binary_crossentropy',
-                  optimizer=optimizers.Adam(lr=1e-4),
-                  metrics=['acc'])
+                optimizer=optimizers.Adam(lr=1e-4),
+                metrics=['acc'])
 
     # callbacks
     lr_reducer = ReduceLROnPlateau(
@@ -203,6 +250,8 @@ def predict(X_test, model, back_bone):
         test_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
     elif back_bone == 'MobileNetV2'or back_bone =='4':
         test_datagen = ImageDataGenerator(preprocessing_function=mobile_preprocess)
+    elif back_bone == 'Combine' or back_bone =='5':
+        test_datagen = ImageDataGenerator(preprocessing_function=denset_preprocess)
     else:
         raise ValueError('Please select transfer learning model!')
 
@@ -219,7 +268,7 @@ def predict(X_test, model, back_bone):
 
 
 def load_train():
-    dir = "Images-processed"                # your file directory
+    dir = "/home/eric/python project/COVID-CT_QSR_Data_Challenge/COVID-CT QSR Data Challenge/Images-processed"                # your file directory
     covid_dir = dir+"/CT_COVID/"
     noncovid_dir = dir+"/CT_NonCOVID/"
 
@@ -249,8 +298,9 @@ def load_train():
 
 if __name__ == "__main__":
     X_train, y_train = load_train()
-    transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 : \n")
+    transfer = input("select transfer learning model: \n 1.ResNet50V2 2.Xception 3.DenseNet201 4.MobileNetV2 5.Combine: \n")
     model = estimate(X_train, y_train, transfer)
+    model.summary()
 
     # model = load_model("Model.h5")
     X_train, y_train = load_train()
